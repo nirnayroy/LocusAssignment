@@ -7,7 +7,6 @@ author: Nirnay Roy(@nirnayroy)
 Reference: http://paulbourke.net/fractals/dla/
 
 '''
-from typing import List
 import numpy as np
 from numpy import random
 import matplotlib.pyplot as plt
@@ -73,7 +72,7 @@ class Matrix:
             self.checkNeighboursAndStick(particle)
         return
 
-    def spawnParticle(self, pos: tuple, stickiness: float) -> Particle:
+    def spawnParticle(self, pos: tuple, stickiness: float):
         '''
         Initializes a particle at the given position and of gven stickiness
 
