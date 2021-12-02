@@ -12,32 +12,33 @@ from numpy import random
 import matplotlib.pyplot as plt
 
 
+class Particle:
+
+    def __init__(self, pos: tuple, stickiness: float):
+        '''
+        Initialize a particle on the board
+
+        pos: a tuple with particle position as (x, y)
+        '''
+        self.pos = pos
+        self.stickiness = stickiness
+        self.stuck = False
+
+
 class Matrix:
 
     def __init__(self, M: int):
         '''
         Initialize Matrix for DLA
 
-        M: size of the 2d matrix
+        input:
+            M: size of the 2d matrix
         '''
 
         self.M = M
         self.array = np.zeros((M, M))
-        self.stuckParticles = []
 
-    class Particle:
-
-        def __init__(self, pos: tuple, stickiness: float):
-            '''
-            Initialize a particle on the board
-
-            pos: a tuple with particle position as (x, y)
-            '''
-            self.pos = pos
-            self.stickiness = stickiness
-            self.stuck = False
-
-    def aggregate(self, nParticles):
+    def aggregate(self, nParticles: int):
         '''
         Executes DLA by sticking a particle in the middle and
         aggregating particles that walk randomly and stick when a neighbouring
@@ -74,7 +75,7 @@ class Matrix:
 
     def spawnParticle(self, pos: tuple, stickiness: float):
         '''
-        Initializes a particle at the given position and of gven stickiness
+        Initializes a particle at the given position
 
         input:
             pos: position to initialize particle
@@ -83,11 +84,11 @@ class Matrix:
         output:
             particle: a Particle instance
         '''
-        particle = self.Particle(pos, stickiness)
+        particle = Particle(pos, stickiness)
         self.array[particle.pos[0], particle.pos[1]] = 1
         return particle
 
-    def moveParticle(self, particle):
+    def moveParticle(self, particle: Particle):
         '''
         moves a particle from its position to a randomly selected neighbouring
         position
@@ -103,10 +104,6 @@ class Matrix:
 
         neighbors = self.getNeighbours(particle)
 
-        for neighbor in neighbors:
-            if neighbor in self.stuckParticles:
-                neighbors.remove(neighbor)
-
         (x, y) = neighbors[random.randint(len(neighbors))]
         self.array[x, y] = 1
         particle.pos = (x, y)
@@ -120,11 +117,11 @@ class Matrix:
             particle: a Particle instance
         '''
         particle.stuck = True
-        self.stuckParticles.append(particle.pos)
 
     def getNeighbours(self, particle: Particle):
         '''
         returns a list of positions that a particle can move to next
+        excluding the positions of the stuck particle
 
         input:
             particle: a particle object
@@ -133,36 +130,16 @@ class Matrix:
             neighbors: a list containing the position of the neighbors
         '''
         x, y = particle.pos
-
-        def directionList(coordinate):
-            '''
-            checks whether a coordinate is on the boundary and returns a
-            list contating the directions it can move
-
-            input:
-                coordinate: 1st or 2nd index in the position
-
-            output:
-                direction: list of the directions to move
-            '''
-            if coordinate == 0:
-                direction = [0, 1]
-            elif coordinate == self.M-1:
-                direction = [-1, 0]
-            else:
-                direction = [-1, 0, 1]
-            return direction
-
-        dx, dy = directionList(x), directionList(y)
+        move = [-1, 0, 1]
 
         neighbors = []
-        for i in dx:
-            for j in dy:
-                if not(i == 0 and j == 0):
-                    neighbors.append((x+i, y+j))
+        for i in move:
+            for j in move:
+                if not(i == 0 and j == 0) and self.array[(x+i)%self.M, (y+j)%self.M] == 0:
+                    neighbors.append(((x+i)%self.M, (y+j)%self.M))
         return neighbors
 
-    def checkNeighboursAndStick(self, particle):
+    def checkNeighboursAndStick(self, particle: Particle):#
         '''
         check if neighbouring cells have a stuck particle and stick if
         a random float is less than the stickiness of the particle.
@@ -170,11 +147,8 @@ class Matrix:
         input:
             particle: an object of particle class
         '''
-        for neighbor in self.getNeighbours(particle):
-            if neighbor in self.stuckParticles \
-               and random.random() < particle.stickiness:
-                self.stickParticle(particle)
-                break
+        if len(self.getNeighbours(particle)) < 8 and random.random() < particle.stickiness:
+            self.stickParticle(particle)
 
     def showImage(self):
         '''
@@ -184,9 +158,11 @@ class Matrix:
         plt.show()
 
 
+
+
 def main():
-    matrix = Matrix(M=100)
-    matrix.aggregate(nParticles=500)
+    matrix = Matrix(M=251)
+    matrix.aggregate(nParticles=15000)
     matrix.showImage()
 
 
