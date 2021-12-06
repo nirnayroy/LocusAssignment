@@ -8,7 +8,7 @@ Reference: http://paulbourke.net/fractals/dla/
 
 '''
 import numpy as np
-from numpy import matrix, random
+from numpy import random
 import matplotlib.pyplot as plt
 
 POSSIBLE_DIRECTIONS = 8
@@ -153,31 +153,58 @@ class Matrix:
 
 class Simulator:
     def __init__(self, M=251, nParticles=1500, stickiness = 1):
+        '''
+        Initialize a simulator class
+
+        input:
+            M: size of the matrix
+            nParticles: no. of particles in the matrix
+        '''
         self.M = M
         self.nParticles = nParticles
         self.stickiness = stickiness
 
     def run(self):
+        '''
+        runs the simulation
+        '''
         matrix = Matrix(self.M)
         matrix.seedMatrix()
         matrix.aggregate(self.nParticles, self.stickiness)
-        self.saveNpy(matrix)
-        self.showImage(matrix)
+        self.return_numpy(matrix)
 
     def showImage(self, matrix: Matrix):
         '''
         show image of the matrix mapping 0 to white and 1 to black
+
+        input:
+            matrix: A Matrix instance
         '''
         plt.imshow(matrix.array, cmap='Greys', interpolation='nearest')
-        plt.show()
+        filename = f'M_{matrix.M}_NP_{self.nParticles}_ST_{self.stickiness}.png'
+        plt.savefig(filename)
     
     def saveNpy(self, matrix):
+        '''
+        saves a numpy array in the form of an .npy file
+
+        input:
+            matrix: A Matrix instance
+        '''
         filename = f'M_{matrix.M}_NP_{self.nParticles}_ST_{self.stickiness}'
         np.save(filename, matrix.array)
+    
+    def return_numpy(self, matrix):
+        '''
+        saves a numpy array in the form of an .npy file
 
+        input:
+            matrix: A Matrix instance
+        '''
+        return matrix.array
 
 def main():
-    simulation = Simulator(M=100, nParticles=500, stickiness = 0.01)
+    simulation = Simulator(M=100, nParticles=2000, stickiness = 1)
     simulation.run()
 
 if __name__ == '__main__':
