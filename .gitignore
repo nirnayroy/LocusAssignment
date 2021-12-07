@@ -1,3 +1,5 @@
 .npy
 .png
-.pyc
+*.pyc
+*.npy
+*.png
