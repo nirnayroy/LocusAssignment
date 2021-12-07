@@ -18,14 +18,20 @@ class Particle:
     def __init__(self, pos: tuple, stickiness: float):
         '''
         Initialize a particle on the board
-
-        pos: a tuple with particle position as (x, y)
+        
+        Inout:
+            pos: a tuple with particle position as (x, y)
+            stickiness: the stickiness of the particle
         '''
         self.pos = pos
         self.stickiness = stickiness
         self.stuck = False
 
     def stick(self):
+        '''
+        Sticks a particle if a random float(betwn 0 & 1) is less than
+        the stickiness of the particle.
+        '''
         if random.random() < self.stickiness:
             self.stuck = True
 
@@ -56,12 +62,20 @@ class Matrix:
 
         nParticles: no. of particles to aggregate
         '''
+        print('Start!!!')
         for i in range(nParticles):
             particle = self.spawnParticle(pos=self.posAtEdges(), stickiness = stickiness)
             self.walkParticle(particle)
-            print(i)
+            print('particle no.', i)
+        print('End')
 
     def posAtEdges(self):
+        '''
+        returns a random tuple with positions from the edge of the matrix
+        
+        Output:
+            (x, y): a random position from the edge of the tuple
+        '''
         # get coordinates of the edge
         x = random.choice([0, self.M-1])
         y = random.randint(0, self.M)
@@ -152,7 +166,7 @@ class Matrix:
 
 
 class Simulator:
-    def __init__(self, M=251, nParticles=1500, stickiness = 1):
+    def __init__(self, M=51, nParticles=15, stickiness = 1):
         '''
         Initialize a simulator class
 
@@ -171,7 +185,7 @@ class Simulator:
         matrix = Matrix(self.M)
         matrix.seedMatrix()
         matrix.aggregate(self.nParticles, self.stickiness)
-        self.return_numpy(matrix)
+        return matrix.array
 
     def showImage(self, matrix: Matrix):
         '''
@@ -193,18 +207,9 @@ class Simulator:
         '''
         filename = f'M_{matrix.M}_NP_{self.nParticles}_ST_{self.stickiness}'
         np.save(filename, matrix.array)
-    
-    def return_numpy(self, matrix):
-        '''
-        saves a numpy array in the form of an .npy file
-
-        input:
-            matrix: A Matrix instance
-        '''
-        return matrix.array
 
 def main():
-    simulation = Simulator(M=100, nParticles=2000, stickiness = 1)
+    simulation = Simulator(M=251, nParticles=15000, stickiness = 1)
     simulation.run()
 
 if __name__ == '__main__':
