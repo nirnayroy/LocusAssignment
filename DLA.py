@@ -11,7 +11,7 @@ import numpy as np
 from numpy import random
 import matplotlib.pyplot as plt
 
-POSSIBLE_DIRECTIONS = 8
+N_POSSIBLE_NEIGHBORS = 8
 
 class Particle:
 
@@ -49,27 +49,29 @@ class Matrix:
         self.M = M
         self.array = np.zeros((M, M))
 
-    def seedMatrix(self, type= 'central_attractor'):
-        firstParticle = self.spawnParticle((int(self.M/2), int(self.M/2)),
+    def seed_matrix(self, type= 'central_attractor'):
+        firstParticle = self.spawn_particle((int(self.M/2), int(self.M/2)),
                                            stickiness=1)
         firstParticle.stick()
 
-    def aggregate(self, nParticles: int, stickiness: float):
+    def aggregate(self, n_particles: int, stickiness: float):
         '''
         Executes DLA by sticking a particle in the middle and
         aggregating particles that walk randomly and stick when a neighbouring
         cell has stuck particle
 
-        nParticles: no. of particles to aggregate
+        input:
+            n_particles: no. of particles to aggregate
+            stickiness: stickiness of each particle
         '''
         print('Start!!!')
-        for i in range(nParticles):
-            particle = self.spawnParticle(pos=self.posAtEdges(), stickiness = stickiness)
-            self.walkParticle(particle)
+        for i in range(n_particles):
+            particle = self.spawn_particle(pos=self.random_edge_position(), stickiness = stickiness)
+            self.take_steps_until_stuck(particle)
             print('particle no.', i)
         print('End')
 
-    def posAtEdges(self):
+    def random_edge_position(self):
         '''
         returns a random tuple with positions from the edge of the matrix
         
@@ -83,7 +85,7 @@ class Matrix:
             x, y = y, x
         return (x, y)
 
-    def spawnParticle(self, pos: tuple, stickiness: float):
+    def spawn_particle(self, pos: tuple, stickiness: float):
         '''
         Initializes a particle at the given position
 
@@ -97,21 +99,21 @@ class Matrix:
         particle = Particle(pos, stickiness)
         self.array[pos[0], pos[1]] = 1
         # spawn a particle and check if it has stuck neighbours
-        self.checkNeighboursAndStick(particle)
+        self.stick_if_neighbor_found(particle)
         return particle
 
-    def walkParticle(self, particle: Particle):
+    def take_steps_until_stuck(self, particle: Particle):
         '''
         Particle takes random steps
         until it sticks
         '''
         # walk randomly until the particle sticks
         while not particle.stuck:
-            particle = self.moveParticle(particle)
-            self.checkNeighboursAndStick(particle)
+            particle = self.random_step(particle)
+            self.stick_if_neighbor_found(particle)
         return
 
-    def moveParticle(self, particle: Particle):
+    def random_step(self, particle: Particle):
         '''
         moves a particle from its position to a randomly selected neighbouring
         position
@@ -125,14 +127,14 @@ class Matrix:
         x, y = particle.pos
         self.array[x, y] = 0
 
-        neighbors = self.getNeighbours(particle)
+        neighbors = self.get_empty_neighbors(particle)
 
         (x, y) = neighbors[random.randint(len(neighbors))]
         self.array[x, y] = 1
         particle.pos = (x, y)
         return particle
 
-    def checkNeighboursAndStick(self, particle: Particle):#
+    def stick_if_neighbor_found(self, particle: Particle):#
         '''
         check if neighbouring cells have a stuck particle and stick if
         a random float is less than the stickiness of the particle.
@@ -140,10 +142,10 @@ class Matrix:
         input:
             particle: an object of particle class
         '''
-        if len(self.getNeighbours(particle)) < POSSIBLE_DIRECTIONS:
+        if len(self.get_empty_neighbors(particle)) < N_POSSIBLE_NEIGHBORS:
             particle.stick()
 
-    def getNeighbours(self, particle: Particle):
+    def get_empty_neighbors(self, particle: Particle):
         '''
         returns a list of positions that a particle can move to next
         excluding the positions of the stuck particle
@@ -166,16 +168,16 @@ class Matrix:
 
 
 class Simulator:
-    def __init__(self, M=51, nParticles=15, stickiness = 1):
+    def __init__(self, M=51, n_particles=15, stickiness = 1):
         '''
         Initialize a simulator class
 
         input:
             M: size of the matrix
-            nParticles: no. of particles in the matrix
+            n_particles: no. of particles in the matrix
         '''
         self.M = M
-        self.nParticles = nParticles
+        self.n_particles = n_particles
         self.stickiness = stickiness
 
     def run(self):
@@ -183,11 +185,11 @@ class Simulator:
         runs the simulation
         '''
         matrix = Matrix(self.M)
-        matrix.seedMatrix()
-        matrix.aggregate(self.nParticles, self.stickiness)
+        matrix.seed_matrix()
+        matrix.aggregate(self.n_particles, self.stickiness)
         return matrix.array
 
-    def showImage(self, matrix: Matrix):
+    def show_image(self, matrix: Matrix):
         '''
         show image of the matrix mapping 0 to white and 1 to black
 
@@ -195,21 +197,21 @@ class Simulator:
             matrix: A Matrix instance
         '''
         plt.imshow(matrix.array, cmap='Greys', interpolation='nearest')
-        filename = f'M_{matrix.M}_NP_{self.nParticles}_ST_{self.stickiness}.png'
+        filename = f'M_{matrix.M}_NP_{self.n_particles}_ST_{self.stickiness}.png'
         plt.savefig(filename)
     
-    def saveNpy(self, matrix):
+    def save_npy(self, matrix):
         '''
         saves a numpy array in the form of an .npy file
 
         input:
             matrix: A Matrix instance
         '''
-        filename = f'M_{matrix.M}_NP_{self.nParticles}_ST_{self.stickiness}'
+        filename = f'M_{matrix.M}_NP_{self.n_particles}_ST_{self.stickiness}'
         np.save(filename, matrix.array)
 
 def main():
-    simulation = Simulator(M=251, nParticles=15000, stickiness = 1)
+    simulation = Simulator(M=251, n_particles=15000, stickiness = 1)
     simulation.run()
 
 if __name__ == '__main__':
