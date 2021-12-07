@@ -11,14 +11,16 @@ import numpy as np
 from numpy import random
 import matplotlib.pyplot as plt
 
+
 N_POSSIBLE_NEIGHBORS = 8
+
 
 class Particle:
 
     def __init__(self, pos: tuple, stickiness: float):
         '''
         Initialize a particle on the board
-        
+
         Inout:
             pos: a tuple with particle position as (x, y)
             stickiness: the stickiness of the particle
@@ -49,9 +51,16 @@ class Matrix:
         self.M = M
         self.array = np.zeros((M, M))
 
-    def seed_matrix(self, type= 'central_attractor'):
+    def seed_matrix(self, type='central_attractor'):
+        '''
+        Sticks the particles that exist before the aggregation process
+
+        input:
+            type: pattern of inital stuck particles currently implemented for
+                  the 'central attractor' type
+        '''
         firstParticle = self.spawn_particle((int(self.M/2), int(self.M/2)),
-                                           stickiness=1)
+                                            stickiness=1)
         firstParticle.stick()
 
     def aggregate(self, n_particles: int, stickiness: float):
@@ -66,7 +75,8 @@ class Matrix:
         '''
         print('Start!!!')
         for i in range(n_particles):
-            particle = self.spawn_particle(pos=self.random_edge_position(), stickiness = stickiness)
+            particle = self.spawn_particle(pos=self.random_edge_position(),
+                                           stickiness=stickiness)
             self.take_steps_until_stuck(particle)
             print('particle no.', i)
         print('End')
@@ -74,7 +84,7 @@ class Matrix:
     def random_edge_position(self):
         '''
         returns a random tuple with positions from the edge of the matrix
-        
+
         Output:
             (x, y): a random position from the edge of the tuple
         '''
@@ -134,7 +144,7 @@ class Matrix:
         particle.pos = (x, y)
         return particle
 
-    def stick_if_neighbor_found(self, particle: Particle):#
+    def stick_if_neighbor_found(self, particle: Particle):
         '''
         check if neighbouring cells have a stuck particle and stick if
         a random float is less than the stickiness of the particle.
@@ -162,13 +172,14 @@ class Matrix:
         neighbors = []
         for i in move:
             for j in move:
-                if not(i == 0 and j == 0) and self.array[(x+i)%self.M, (y+j)%self.M] == 0:
-                    neighbors.append(((x+i)%self.M, (y+j)%self.M))
+                if not(i == 0 and j == 0) and \
+                   self.array[(x+i) % self.M, (y+j) % self.M] == 0:
+                    neighbors.append(((x+i) % self.M, (y+j) % self.M))
         return neighbors
 
 
 class Simulator:
-    def __init__(self, M=51, n_particles=15, stickiness = 1):
+    def __init__(self, M=51, n_particles=15, stickiness=1):
         '''
         Initialize a simulator class
 
@@ -197,9 +208,10 @@ class Simulator:
             matrix: A Matrix instance
         '''
         plt.imshow(matrix.array, cmap='Greys', interpolation='nearest')
-        filename = f'M_{matrix.M}_NP_{self.n_particles}_ST_{self.stickiness}.png'
+        filename = f'M_{matrix.M}_NP_{self.n_particles}\
+                     _ST_{self.stickiness}.png'
         plt.savefig(filename)
-    
+
     def save_npy(self, matrix):
         '''
         saves a numpy array in the form of an .npy file
@@ -210,9 +222,11 @@ class Simulator:
         filename = f'M_{matrix.M}_NP_{self.n_particles}_ST_{self.stickiness}'
         np.save(filename, matrix.array)
 
+
 def main():
-    simulation = Simulator(M=251, n_particles=15000, stickiness = 1)
+    simulation = Simulator(M=251, n_particles=15000, stickiness=1)
     simulation.run()
+
 
 if __name__ == '__main__':
     main()
