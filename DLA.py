@@ -18,14 +18,20 @@ class Particle:
     def __init__(self, pos: tuple, stickiness: float):
         '''
         Initialize a particle on the board
-
-        pos: a tuple with particle position as (x, y)
+        
+        Inout:
+            pos: a tuple with particle position as (x, y)
+            stickiness: the stickiness of the particle
         '''
         self.pos = pos
         self.stickiness = stickiness
         self.stuck = False
 
     def stick(self):
+        '''
+        Sticks a particle if a random float(betwn 0 & 1) is less than
+        the stickiness of the particle.
+        '''
         if random.random() < self.stickiness:
             self.stuck = True
 
@@ -64,6 +70,12 @@ class Matrix:
         print('End')
 
     def posAtEdges(self):
+        '''
+        returns a random tuple with positions from the edge of the matrix
+        
+        Output:
+            (x, y): a random position from the edge of the tuple
+        '''
         # get coordinates of the edge
         x = random.choice([0, self.M-1])
         y = random.randint(0, self.M)
