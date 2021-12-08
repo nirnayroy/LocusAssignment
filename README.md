@@ -64,14 +64,15 @@ We should not predict anything for N<49 because our feature doesn't have signifi
 
 ```
 if N>625:
+  Cut a 25x25 square shaped section from the centre of the image and calculate Central Particle Denstiy.
+  Central Particle Density = N_q(No. of particles stuck on the section)/q^2(Total no. of cells)
   use linear regression,
   stickiness = = -0.1741*Central Particle Density + 0.1233
 else if 625>N>49:
   Low Confidence Zone
-  use linear regression(but knowing that the predictions contain error),
-  stickiness = = -0.1741*Central Particle Density + 0.1233
+  Same as above, But we should expect higher error in our prediction as N decreases.
 else:
-  It is really difficult to predict the stickiness of particles from the images when there are lesser particles.
+  It is really difficult to predict the stickiness of particles from the images when there are less particles.
 ```
 ### Additonal Notes
 
