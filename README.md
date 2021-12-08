@@ -70,7 +70,8 @@ if N>625:
   stickiness = = -0.1741*Central Particle Density + 0.1233
 else if 625>N>49:
   Low Confidence Zone
-  Same as above, But we should expect higher error in our prediction as N decreases.
+  Cut a square of the size of max. perfect square less than N
+  Same as above, But we should expect higher error in our prediction as q decreases.
 else:
   It is really difficult to predict the stickiness of particles from the images when there are less particles.
 ```
