@@ -21,7 +21,7 @@ class Particle:
         '''
         Initialize a particle on the board
 
-        Inout:
+        Input:
             pos: a tuple with particle position as (x, y)
             stickiness: the stickiness of the particle
         '''
