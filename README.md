@@ -79,4 +79,4 @@ else:
 
 1. q must be selected such that the central square is covered with particles and if a new particle were to be introduced in the matrix, it would have almost 0 probability of sticking inside the selected q-sized square.
 2. The numbers 625 and 49 were picked using the above rationale. 625 is the maximum no. of particles that fit on a 25x25 grid and same for 49 in 7x7 grid.
-3. We can improve performance the low confidence zone by further adjusting q according to the N given.
+3. We can improve performance in the low confidence zone by further adjusting q according to the N given.
